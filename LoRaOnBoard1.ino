@@ -33,6 +33,7 @@ Servo ESC;
 int joyX = 0;
 int joyY = 1;
 
+//set up the pulse width modulation driver
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
  // Rotary Encoder Inputs
@@ -122,22 +123,20 @@ void setup() {
    pinMode (inputCLK,INPUT);
    pinMode (inputDT,INPUT);
 
-     // Attach the ESC on pin 9
-
 
 }
 
 int EscVal = 200;
 
 void loop() {
-  //ESC.write(EscVal-100);
-  
+  //radio stuff
    if (rf95.available())
   {
     // Should be a message for us now
     uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
 
+     //get the text from the remote controller
     if (rf95.recv(buf, &len))
     {
       digitalWrite(LED, HIGH);
@@ -147,9 +146,8 @@ void loop() {
        Serial.print("RSSI: ");
       Serial.println(rf95.lastRssi(), DEC);
 
-      
+      //this characters in the received text are the elevator value
       char sv1[3]  = {(char)buf[0], (char)buf[1], (char)buf[2]};
-      
       servoVal = atoi(sv1) -30;
       pwm.setPWM(3, 0, servoVal);
       /*
@@ -158,25 +156,26 @@ void loop() {
       Serial.println("New ServoVal:.........");
       */
       Serial.print(servoVal);
-
+      
+      //this characters in the received text are the aeleron servo actuator value
       char sv2[3]  = {(char)buf[6], (char)buf[7], (char)buf[8]};
       servoVal2 = atoi(sv2) -30;
       pwm.setPWM(1, 0, servoVal2);
       pwm.setPWM(2, 0, servoVal2);      
 
-
+      //this characters in the received text are the motor speed value
       char esc1[3]  = {(char)buf[3], (char)buf[4], (char)buf[5]};
       
-      
+      //convert the ESC (motor speed) value to integer
       EscVal = atoi(esc1);
       EscVal = map(EscVal, 0, 1023, 0, 1000);
       //ESC.write(1100);
       
-
-      Serial.println("Motor Value!");
+      //print motor value in serial monitor
+      Serial.println("Motor Value: ");
       Serial.println(EscVal);
       
-      // Send a reply
+      // default reply, should be replaced with GPS coordinates
       aint8_t data[] = "And hello back to you";
       rf95.send(data, sizeof(data));
       rf95.waitPacketSent();
@@ -198,7 +197,7 @@ else
     
   }
   
-
+      //set the motor speed
       pwm.setPWM(0, 0, EscVal);
       //delay(100);
 }
