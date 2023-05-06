@@ -1,10 +1,8 @@
-// Feather9x_TX
-// -*- mode: C++ -*-
-// Example sketch showing how to create a simple messaging client (transmitter)
-// with the RH_RF95 class. RH_RF95 class does not provide for addressing or
-// reliability, so you should only use RH_RF95 if you do not need the higher
-// level messaging abilities.
-// It is designed to work with the other example Feather9x_RX
+/*......................................................................
+This code is for the remote controller. It will send the values of the
+joysticks, knobs and other data to the plane, and will get a response.
+Speed with current setup ~7 times per second.
+.....................................................................*/
 
 #include <SPI.h>
 #include <RH_RF95.h>
