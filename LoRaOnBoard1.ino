@@ -1,3 +1,9 @@
+/*....................................................................
+This is the on board module code. This code will get the message from
+the radio controller, convert to proper datatypes (mostly int)
+and will controll the hardware accordingly.
+....................................................................*/
+
 //ECS: Digital 9
 //Knob CLK: Digital 10, DT: Digital 11
 //Joystick VRX A0, VRY A1
@@ -49,7 +55,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 int servoVal;
 int servoVal2;
-
+//set up function sets up all the necesary drivers and functions for the hardware
 void setup() {
 
 
@@ -125,9 +131,13 @@ void setup() {
 
 
 }
-
+//default motor value (200 = motor is stopped)
 int EscVal = 200;
 
+
+
+//this loop will continuously listen to the radio controller response over the radio,
+//will parse the received text, and manipulate the drone accordingly 
 void loop() {
   //radio stuff
    if (rf95.available())
