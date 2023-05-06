@@ -53,6 +53,7 @@ String encdir ="";
 // Singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
+//set up function sets up all the necesary drivers and functions for the hardware
 void setup() 
 {
 
@@ -146,7 +147,7 @@ void sendPacket(char*  radiopacket)
   uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
   uint8_t len = sizeof(buf);
   
-
+  //listen for a response
   Serial.println("Waiting for reply...");
   if (rf95.waitAvailableTimeout(1000))
   { 
@@ -187,6 +188,9 @@ char intToChar(int n) {
 
 int motorVal = 0;
 
+//this continuous loop gets the values from the joystick, 
+//converts all the controller values to text 
+//and pushes to the plane board over the radio 
 void loop()
 {
   //tail (y axis actually)
@@ -202,14 +206,16 @@ void loop()
   //servo2.write(servoVal);
   //delay(15); 
 */
+  //map the joystick position to propper values
   motorVal = analogRead(2);
   motorVal = map(motorVal, 0, 1023, 400, 195);
   
-
+  
+  //motor speed value holder
   counter = motorVal;
-
   Serial.println(counter);
-
+ 
+  //convert the joystick X axis mapped value to text
   String joy =  String(servoVal+30);
   char tab[1024];
   strncpy(tab, joy.c_str(), sizeof(tab));
@@ -217,20 +223,25 @@ void loop()
   
    //Serial.print(tab);
  
+  //convert the motor speed axis mapped value to text
   String rot = String(counter);
   char tab2[1024];
   strncpy(tab2, rot.c_str(), sizeof(tab2));
   tab2[sizeof(tab2) - 1] = 0;
-
+  
+  //concatinate new value to the string that will be sent via radio
   strcat(tab, tab2);
 
+  //convert the joystick X axis mapped value to text (I KNOW IT SAYS X, IT SHOULD BE Y!!!)
   String joyx2 =  String(servoVal2+30);
   char tab3[1024];
   strncpy(tab3, joyx2.c_str(), sizeof(tab3));
   tab3[sizeof(tab3) - 1] = 0;
-
+ 
+  //concatinate new value to the string that will be sent via radio
   strcat(tab, tab3);
 
+  //print the text to be sent over radio and push it. 
   Serial.println(tab);
   sendPacket(tab);
 
